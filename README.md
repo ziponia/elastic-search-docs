@@ -141,3 +141,68 @@ curl -XGET 'http://localhost:9200/_analyze?pretty' \
   ]
 }
 ```
+
+## ISSUE
+
+#### ElasticSearch cluster_block_exception
+
+데이터를 추가 삭제하다보면, 가끔 `ElasticSearch cluster_block_exception` 이라고 뜨면서 인덱스가 `read-only` 로 잠기는 상태가 된다.
+
+```curl
+curl -XGET http://localhost:9200/addresses/_settings?pretty -H 'application/json'
+
+{
+    "addresses": {
+        "settings": {
+            "index": {
+                "number_of_shards": "1",
+                "blocks": {
+                    "read_only_allow_delete": "true" // 요기
+                },
+                "provided_name": "addresses",
+                "creation_date": "1598892564166",
+                "number_of_replicas": "1",
+                "uuid": "FPcGD8KfSnyAQ5642YBoKw",
+                "version": {
+                    "created": "7040299"
+                }
+            }
+        }
+    }
+}
+```
+
+검색해보면, 아마... 아래 상황들일 때 잠기는 것 같다.
+
+- 디스크가 es 가 허용하는 범위를 초과함. (디스크 용량)
+- CPU 과부하
+
+_해결_
+
+아래 두가지 방법으로 해결 할 수 있다.
+
+일시적 해결.
+
+```curl
+curl -XPUT 'http://localhost:9200/addresses/_settings' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+    "index": {
+        "blocks": {
+            "read_only_allow_delete": "false"
+        }
+    }
+}'
+```
+
+잠슴상태 (안전한 상태) 를 사용하지 않음.
+
+```curl
+curl -XPUT 'http://localhost:9200/_cluster/settings' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "persistent": {
+        "cluster.routing.allocation.disk.threshold_enabled": false
+    }
+}'
+```
