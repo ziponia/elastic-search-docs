@@ -2,7 +2,7 @@
 
 - [x] 환경은 docker 로 구성 할 수 있다.
 - [x] 플러그인을 설치 할 수 있다.
-- [ ] bulk api 를 사용해서, 데이터를 insert 할 수 있다.
+- [x] bulk api 를 사용해서, 데이터를 insert 할 수 있다.
 - [ ] 한글 형태소 분석기인, nori_tokenizer 를 사용 할 수 있다.
 - [ ] 한글 사전을 커스터마이징 할 수 있다.
 
@@ -140,6 +140,52 @@ curl -XGET 'http://localhost:9200/_analyze?pretty' \
     }
   ]
 }
+```
+
+## bulk api 를 사용해서, 데이터를 insert 할 수 있다.
+
+bulk 를 할 수 있는 포맷
+
+예시)
+
+```json
+{ "index": { "_type": "typename" } }
+{"name": "kuby"}
+
+```
+
+1. 첫째라인 - 인덱스, 타입 을 선언. 둘째라인 - 실제 데이터
+2. 한줄로 공백없이 작성해야 한다.
+3. 마지막 라인은 공백 `\n` 이여야 한다.
+
+_이하 우체국 강원도주소 데이터를 es 에 맞춰서 일부분 변환 한 것_
+
+```json
+{"index":{"_type":"address"}}
+{"zonecode":"25627","sido":"강원도","sido_eng":"Gangwon-do","gun":"강릉시","gun_eng":"Gangneung-si","bname1":"강동면","bname_eng":"Gangdong-myeon","road_code":"421504460640","road_name":"아래장작골길","road_name_eng":"Araejangjakgol-gil","is_under":false,"building_main_number":"138","building_sub_number":"0","building_manage_number":"4215034022002490000044744","building_develiery_name":"","sigungu_building_name":"","bcode":"4215034022","bname":"","bname2":"모전리","dong_name":"강동면","is_san":false,"jibun_bon":"248","dong_serial_number":"01","jibun_bu":"1","old_post_num":"","post_num_serial":""}
+{"index":{"_type":"address"}}
+{"zonecode":"25627","sido":"강원도","sido_eng":"Gangwon-do","gun":"강릉시","gun_eng":"Gangneung-si","bname1":"강동면","bname_eng":"Gangdong-myeon","road_code":"421504460640","road_name":"아래장작골길","road_name_eng":"Araejangjakgol-gil","is_under":false,"building_main_number":"261","building_sub_number":"0","building_manage_number":"4215034022008330000046825","building_develiery_name":"","sigungu_building_name":"","bcode":"4215034022","bname":"","bname2":"모전리","dong_name":"강동면","is_san":false,"jibun_bon":"833","dong_serial_number":"01","jibun_bu":"0","old_post_num":"","post_num_serial":""}
+{"index":{"_type":"address"}}
+{"zonecode":"25627","sido":"강원도","sido_eng":"Gangwon-do","gun":"강릉시","gun_eng":"Gangneung-si","bname1":"강동면","bname_eng":"Gangdong-myeon","road_code":"421503220011","road_name":"단경로","road_name_eng":"Dangyeong-ro","is_under":false,"building_main_number":"36","building_sub_number":"0","building_manage_number":"4215034022003720000044953","building_develiery_name":"","sigungu_building_name":"","bcode":"4215034022","bname":"","bname2":"모전리","dong_name":"강동면","is_san":false,"jibun_bon":"372","dong_serial_number":"01","jibun_bu":"0","old_post_num":"","post_num_serial":""}
+
+```
+
+```http
+POST /addresses/_bulk HTTP/1.1
+Host: localhost:9200
+Content-Type: application/json
+
+{"index":{"_type":"address"}}
+{"zonecode":"25627","sido":"강원도","sido_eng":"Gangwon-do","gun":"강릉시","gun_eng":"Gangneung-si","bname1":"강동면","bname_eng":"Gangdong-myeon"}
+
+```
+
+파일로 할 경우.
+
+```
+curl -XPOST 'http://localhost:9200/addresses/_bulk' \
+--header 'Content-Type: application/json' \
+--data-binary '@address_json/20200806_강원도.json'
 ```
 
 ## ISSUE

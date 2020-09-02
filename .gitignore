@@ -1,2 +1,6 @@
 node_modules
 es
+elasticsearch
+code_file
+.DS_Store
+*.js
