@@ -3,14 +3,29 @@ version: "3.8"
 services:
   elasticsearch:
     container_name: es
+    privileged: true
     build:
       context: .
       dockerfile: ./Dockerfile
     environment:
       discovery.type: single-node
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      http.cors.enabled: "true"
+      http.cors.allow-origin: "*"
     ports:
-      - 9200:9200
+      - 80:9200
     volumes:
-      - "./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
-      - ./elasticsearch/data:/usr/share/elasticsearch/data
+      - esdata:/usr/share/elasticsearch/data
+  kibana:
+    container_name: ks
+    image: docker.elastic.co/kibana/kibana:7.9.1
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    links:
+      - elasticsearch
+    ports:
+      - 5601:5601
+
+volumes:
+  esdata:
+    driver: local
