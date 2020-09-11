@@ -3,7 +3,7 @@
 - [x] 환경은 docker 로 구성 할 수 있다.
 - [x] 플러그인을 설치 할 수 있다.
 - [x] bulk api 를 사용해서, 데이터를 insert 할 수 있다.
-- [ ] 한글 형태소 분석기인, nori_tokenizer 를 사용 할 수 있다.
+- [x] 한글 형태소 분석기인, nori_tokenizer 를 사용 할 수 있다.
 - [ ] 한글 사전을 커스터마이징 할 수 있다.
 
 ## 환경은 docker 로 구성 할 수 있다.
@@ -186,6 +186,168 @@ Content-Type: application/json
 curl -XPOST 'http://localhost:9200/addresses/_bulk' \
 --header 'Content-Type: application/json' \
 --data-binary '@address_json/20200806_강원도.json'
+```
+
+## 인덱스에 nori 설정
+
+```curl
+curl --location --request PUT 'https://es.ziponia.com/pizza7' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: __cfduid=dc42074b60627f0e81d7ec271a751cb6d1599726933' \
+--data-raw '{
+    "settings": {
+        "number_of_shards": 2,
+        "number_of_replicas": 1,
+        "analysis": {
+            "analyzer": {
+                "korean_analyzer": {
+                    "type": "custom",
+                    "tokenizer": "nori_tokenizer",
+                    "filter": [
+                        "nori_posfilter"
+                    ]
+                }
+            },
+            "filter": {
+                "nori_posfilter": {
+                    "type": "nori_part_of_speech",
+                    "stoptags": [
+                        "E",
+                        "IC",
+                        "J",
+                        "MAG",
+                        "MM",
+                        "NA",
+                        "NR",
+                        "SC",
+                        "SE",
+                        "SF",
+                        "SH",
+                        "SL",
+                        "SN",
+                        "SP",
+                        "SSC",
+                        "SSO",
+                        "SY",
+                        "UNA",
+                        "UNKNOWN",
+                        "VA",
+                        "VCN",
+                        "VCP",
+                        "VSV",
+                        "VV",
+                        "VX",
+                        "XPN",
+                        "XR",
+                        "XSA",
+                        "XSN",
+                        "XSV"
+                    ]
+                }
+            }
+        }
+    },
+    "mappings": {
+        "properties": {
+            "guide_title": {
+                "type": "text",
+                "analyzer": "korean_analyzer",
+                "fields": {
+                    "raw": {
+                        "type": "text"
+                    }
+                }
+            },
+            "guide_content": {
+                "type": "text",
+                "analyzer": "korean_analyzer",
+                "fields": {
+                    "raw": {
+                        "type": "text"
+                    }
+                }
+            }
+        }
+    }
+}'
+```
+```json
+{
+    "settings": {
+        "number_of_shards": 2,
+        "number_of_replicas": 1,
+        "analysis": {
+            "analyzer": {
+                "korean_analyzer": {
+                    "type": "custom",
+                    "tokenizer": "nori_tokenizer",
+                    "filter": [
+                        "nori_posfilter"
+                    ]
+                }
+            },
+            "filter": {
+                "nori_posfilter": {
+                    "type": "nori_part_of_speech",
+                    "stoptags": [
+                        "E",
+                        "IC",
+                        "J",
+                        "MAG",
+                        "MM",
+                        "NA",
+                        "NR",
+                        "SC",
+                        "SE",
+                        "SF",
+                        "SH",
+                        "SL",
+                        "SN",
+                        "SP",
+                        "SSC",
+                        "SSO",
+                        "SY",
+                        "UNA",
+                        "UNKNOWN",
+                        "VA",
+                        "VCN",
+                        "VCP",
+                        "VSV",
+                        "VV",
+                        "VX",
+                        "XPN",
+                        "XR",
+                        "XSA",
+                        "XSN",
+                        "XSV"
+                    ]
+                }
+            }
+        }
+    },
+    "mappings": {
+        "properties": {
+            "guide_title": {
+                "type": "text",
+                "analyzer": "korean_analyzer",
+                "fields": {
+                    "raw": {
+                        "type": "text"
+                    }
+                }
+            },
+            "guide_content": {
+                "type": "text",
+                "analyzer": "korean_analyzer",
+                "fields": {
+                    "raw": {
+                        "type": "text"
+                    }
+                }
+            }
+        }
+    }
+}
 ```
 
 ## ISSUE
