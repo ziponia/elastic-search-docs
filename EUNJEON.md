@@ -1,6 +1,6 @@
 ## 은전한닢 (AWS Elasticsearch Service 지원)
 
-2020. 09. 17. 현재 ES 는 7.7 Version.
+2020-09-17 현재 ES 는 7.7 Version.
 
 소감.
 
@@ -13,7 +13,7 @@ _의문 1._
 
 java로 문자열을 vector 로 만든다는게 뭐지?
 
-
+### Query
 다음은 인덱스 생성시 `유사어` 지정 예시
 
 ```json
