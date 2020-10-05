@@ -1,0 +1,8 @@
+version: "3.8"
+
+services:
+  es-server:
+    container_name: es-server
+    image: thtjwls/es-server:latest
+    ports:
+      - 9200:9200

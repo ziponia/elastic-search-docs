@@ -4,3 +4,7 @@ elasticsearch
 code_file
 .DS_Store
 *.js
+venv
+/lib
+.idea
+*.lock

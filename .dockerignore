@@ -2,3 +2,5 @@ bulk
 address_json
 code_file
 node_modules
+.idea
+*.lock
