@@ -193,55 +193,54 @@ curl -XPOST 'http://localhost:9200/addresses/_bulk' \
 ```curl
 curl --location --request PUT 'https://es.ziponia.com/pizza7' \
 --header 'Content-Type: application/json' \
---header 'Cookie: __cfduid=dc42074b60627f0e81d7ec271a751cb6d1599726933' \
 --data-raw '{
     "settings": {
         "number_of_shards": 2,
         "number_of_replicas": 1,
         "analysis": {
+            "tokenizer": {
+                "nori": {
+                    "type": "nori_tokenizer",
+                    "index_eojeol": true,
+                    "decompound": true,
+                    "user_dictionary_rules": ["c++", "C샤프", "세종", "세종시 세종 시", "요금제"],
+                    "index_poses": [
+                        "UNK",
+                        "EP",
+                        "E",
+                        "I",
+                        "J",
+                        "M",
+                        "N",
+                        "S",
+                        "SL",
+                        "SH",
+                        "SN",
+                        "V",
+                        "VCP",
+                        "XP",
+                        "XS",
+                        "XR"
+                    ]
+                }
+            },
             "analyzer": {
                 "korean_analyzer": {
                     "type": "custom",
-                    "tokenizer": "nori_tokenizer",
+                    "tokenizer": "nori",
                     "filter": [
-                        "nori_posfilter"
+                        "synonym_filter"
                     ]
                 }
             },
             "filter": {
-                "nori_posfilter": {
-                    "type": "nori_part_of_speech",
-                    "stoptags": [
-                        "E",
-                        "IC",
-                        "J",
-                        "MAG",
-                        "MM",
-                        "NA",
-                        "NR",
-                        "SC",
-                        "SE",
-                        "SF",
-                        "SH",
-                        "SL",
-                        "SN",
-                        "SP",
-                        "SSC",
-                        "SSO",
-                        "SY",
-                        "UNA",
-                        "UNKNOWN",
-                        "VA",
-                        "VCN",
-                        "VCP",
-                        "VSV",
-                        "VV",
-                        "VX",
-                        "XPN",
-                        "XR",
-                        "XSA",
-                        "XSN",
-                        "XSV"
+                // 유사어 지정
+                "synonym_filter": {
+                    "type": "synonym",
+                    "synonyms": [
+                        "고객센터,센터,상담실",
+                        "요금,얼마,비싸",
+                        "이벤트,행사"
                     ]
                 }
             }
@@ -249,104 +248,89 @@ curl --location --request PUT 'https://es.ziponia.com/pizza7' \
     },
     "mappings": {
         "properties": {
-            "guide_title": {
+            "title": {
                 "type": "text",
-                "analyzer": "korean_analyzer",
-                "fields": {
-                    "raw": {
-                        "type": "text"
-                    }
-                }
-            },
-            "guide_content": {
-                "type": "text",
-                "analyzer": "korean_analyzer",
-                "fields": {
-                    "raw": {
-                        "type": "text"
-                    }
-                }
+                "analyzer": "korean_analyzer"
             }
         }
     }
 }'
 ```
+
 ```json
 {
-    "settings": {
-        "number_of_shards": 2,
-        "number_of_replicas": 1,
-        "analysis": {
-            "analyzer": {
-                "korean_analyzer": {
-                    "type": "custom",
-                    "tokenizer": "nori_tokenizer",
-                    "filter": [
-                        "nori_posfilter"
-                    ]
-                }
-            },
-            "filter": {
-                "nori_posfilter": {
-                    "type": "nori_part_of_speech",
-                    "stoptags": [
-                        "E",
-                        "IC",
-                        "J",
-                        "MAG",
-                        "MM",
-                        "NA",
-                        "NR",
-                        "SC",
-                        "SE",
-                        "SF",
-                        "SH",
-                        "SL",
-                        "SN",
-                        "SP",
-                        "SSC",
-                        "SSO",
-                        "SY",
-                        "UNA",
-                        "UNKNOWN",
-                        "VA",
-                        "VCN",
-                        "VCP",
-                        "VSV",
-                        "VV",
-                        "VX",
-                        "XPN",
-                        "XR",
-                        "XSA",
-                        "XSN",
-                        "XSV"
-                    ]
-                }
-            }
+  "settings": {
+    "number_of_shards": 2,
+    "number_of_replicas": 1,
+    "analysis": {
+      "analyzer": {
+        "korean_analyzer": {
+          "type": "custom",
+          "tokenizer": "nori_tokenizer",
+          "filter": ["nori_posfilter"]
         }
-    },
-    "mappings": {
-        "properties": {
-            "guide_title": {
-                "type": "text",
-                "analyzer": "korean_analyzer",
-                "fields": {
-                    "raw": {
-                        "type": "text"
-                    }
-                }
-            },
-            "guide_content": {
-                "type": "text",
-                "analyzer": "korean_analyzer",
-                "fields": {
-                    "raw": {
-                        "type": "text"
-                    }
-                }
-            }
+      },
+      "filter": {
+        "nori_posfilter": {
+          "type": "nori_part_of_speech",
+          "stoptags": [
+            "E",
+            "IC",
+            "J",
+            "MAG",
+            "MM",
+            "NA",
+            "NR",
+            "SC",
+            "SE",
+            "SF",
+            "SH",
+            "SL",
+            "SN",
+            "SP",
+            "SSC",
+            "SSO",
+            "SY",
+            "UNA",
+            "UNKNOWN",
+            "VA",
+            "VCN",
+            "VCP",
+            "VSV",
+            "VV",
+            "VX",
+            "XPN",
+            "XR",
+            "XSA",
+            "XSN",
+            "XSV"
+          ]
         }
+      }
     }
+  },
+  "mappings": {
+    "properties": {
+      "guide_title": {
+        "type": "text",
+        "analyzer": "korean_analyzer",
+        "fields": {
+          "raw": {
+            "type": "text"
+          }
+        }
+      },
+      "guide_content": {
+        "type": "text",
+        "analyzer": "korean_analyzer",
+        "fields": {
+          "raw": {
+            "type": "text"
+          }
+        }
+      }
+    }
+  }
 }
 ```
 
@@ -403,7 +387,7 @@ curl -XPUT 'http://localhost:9200/addresses/_settings' \
 }'
 ```
 
-잠슴상태 (안전한 상태) 를 사용하지 않음.
+잠금상태 (안전한 상태) 를 사용하지 않음.
 
 ```curl
 curl -XPUT 'http://localhost:9200/_cluster/settings' \
